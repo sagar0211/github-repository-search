@@ -159,15 +159,17 @@ export const SearchComponent = () => {
         {!isLoading && repoData.length > per_page_value - 1 && (
           <View style={Styles.paginationMainContainerView}>
             <View style={Styles.paginationSubContainerView}>
-              <TouchableOpacity
-                onPress={async () => {
-                  await setPageNumber(pageNumber - 1);
-                  await fetchRepos(searchedText, pageNumber, selected, order);
-                }}>
-                <Text style={Styles.paginationTextStyle}>
-                  {CONSTANTS.backArrow}
-                </Text>
-              </TouchableOpacity>
+              {pageNumber > 1 && (
+                <TouchableOpacity
+                  onPress={async () => {
+                    await setPageNumber(pageNumber - 1);
+                    await fetchRepos(searchedText, pageNumber, selected, order);
+                  }}>
+                  <Text style={Styles.paginationTextStyle}>
+                    {CONSTANTS.backArrow}
+                  </Text>
+                </TouchableOpacity>
+              )}
 
               <Text style={Styles.paginationTextStyle}>{pageNumber}</Text>
               <TouchableOpacity
