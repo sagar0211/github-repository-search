@@ -1,5 +1,9 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import {Image, Text, View} from 'react-native';
+import Styles from './Card.Component.style';
+import LOCALES from '../../Constants/index';
+
+const CONSTANTS = LOCALES.cardComponentContants;
 
 const CardComponent = ({
   avatar_url,
@@ -10,36 +14,53 @@ const CardComponent = ({
 }: any) => {
   return (
     <>
-      <View
-        style={{
-          marginHorizontal: 24,
-          marginVertical: 8,
-          backgroundColor: '#FCFCFC',
-          borderRadius: 18,
-        }}>
-        <View style={{margin: 8}}>
+      <View style={Styles.mainContainer}>
+        <View style={Styles.subContainer}>
           <Image
             resizeMode="cover"
             source={{uri: avatar_url}}
-            style={{
-              alignSelf: 'center',
-              backgroundColor: '#E7F4FF',
-              width: 100,
-              height: 100,
-              justifyContent: 'center',
-              borderRadius: 12,
-              padding: 10,
-              marginBottom: 8,
-            }}
+            style={Styles.imageContainer}
           />
+          <View style={Styles.dataContainerView}>
+            <View style={Styles.textContainerView}>
+              <Text style={Styles.textTitleKey}>{CONSTANTS.repoName}</Text>
+              <Text style={[Styles.textTitleValue, !name && Styles.notFound]}>
+                {name || CONSTANTS.defaultNotFount}
+              </Text>
+            </View>
 
-          <Text>Repo Name: {name || 'Not found'}</Text>
-          <Text>Star Count: {stargazers_count || 'Not found'} </Text>
-          <Text>Description: {description || 'Not found'} </Text>
-          <Text>Languages: {language || 'Not found'} </Text>
+            <View style={Styles.textContainerView}>
+              <Text style={Styles.textTitleKey}>{CONSTANTS.starCount}</Text>
+              <Text
+                style={[
+                  Styles.textTitleValue,
+                  !stargazers_count && Styles.notFound,
+                ]}>
+                {stargazers_count || CONSTANTS.defaultNotFount}
+              </Text>
+            </View>
+
+            <View style={Styles.textContainerView}>
+              <Text style={Styles.textTitleKey}>{CONSTANTS.description}</Text>
+              <Text
+                style={[
+                  Styles.textTitleValue,
+                  !description && Styles.notFound,
+                ]}>
+                {description || CONSTANTS.defaultNotFount}
+              </Text>
+            </View>
+
+            <View style={Styles.textContainerView}>
+              <Text style={Styles.textTitleKey}>{CONSTANTS.languages}</Text>
+              <Text
+                style={[Styles.textTitleValue, !language && Styles.notFound]}>
+                {language || CONSTANTS.defaultNotFount}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
-  
     </>
   );
 };

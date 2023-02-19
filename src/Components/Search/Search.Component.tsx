@@ -9,21 +9,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {SelectList} from 'react-native-dropdown-select-list';
 import CardComponent from '../Card/Card.Component';
-import {
-  MultipleSelectList,
-  SelectList,
-} from 'react-native-dropdown-select-list';
+import Styles from './Search.Component.styles';
+import LOCALES from '../../Constants';
 
-export const SearchComponent = (props: any) => {
+const CONSTANTS = LOCALES.searchComponentConstants;
+
+export const SearchComponent = () => {
   const [repoData, setRepoData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchedText, setSearchedText] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [selected, setSelected] = useState();
-  const [order, setOrder] = useState('asc');
+  const [order, setOrder] = useState('desc');
   const [sortPressed, setSortPressed] = useState(false);
-  const [dateValue, setDateValue] = useState('created_at');
   let per_page_value = 10;
 
   const fetchRepos = async (
@@ -34,16 +34,13 @@ export const SearchComponent = (props: any) => {
   ) => {
     setIsLoading(true);
     let url = `https://api.github.com/search/repositories?q=${searchedText}&page=${pageNumber}&per_page=${per_page_value}&sort=${selected}&order=${order}`;
-    console.log(url);
     await axios
       .get(url)
       .then(response => {
-        console.log(response.data.items);
         setRepoData(response.data.items);
         setIsLoading(false);
       })
       .catch(err => {
-        console.log(err);
         setIsLoading(false);
       });
   };
@@ -52,7 +49,8 @@ export const SearchComponent = (props: any) => {
     {key: 'stars', value: 'Stars'},
     {key: 'watchers', value: 'Watchers'},
     {key: 'score', value: 'Score'},
-    // {key: 'name', value: 'Name'},
+    {key: 'created_at', value: 'Created at'},
+    {key: 'updated_at', value: 'Updated at'},
   ];
 
   const orderByData = [
@@ -60,60 +58,33 @@ export const SearchComponent = (props: any) => {
     {key: 'desc', value: 'Descending'},
   ];
 
-  const date = [
-    {key: 'created_at', value: 'Created at'},
-    {key: 'updated_at', value: 'Updated at'},
-  ];
-
   const sortUI = () => {
     return (
       <>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            width: '100%',
-          }}>
-          <View style={{width: '50%', paddingBottom: 10,paddingLeft: 10,paddingRight: 10}}>
-            {/* <Text style={{color: 'white', padding: 5}}>Sort by </Text> */}
-            {/* <MultipleSelectList
-              setSelected={(val: any) => setSelected(val)}
-              data={sortByData}
-              save="key"
-              label="Sort by option"
-              boxStyles={{backgroundColor: 'white', marginBottom: 12}}
-              dropdownStyles={{backgroundColor: 'white', marginBottom: 12}}
-              search={false}
-            /> */}
-            <Text style={{color: 'white', padding: 5}}>Sort by </Text>
+        <View style={Styles.sortUiMainContainerView}>
+          <View style={Styles.sortUiSubContainerView}>
+            <Text style={Styles.sortTitleText}>{CONSTANTS.sortByTitle}</Text>
             <SelectList
               setSelected={val => setSelected(val)}
               data={sortByData}
               save="key"
               boxStyles={{backgroundColor: 'white'}}
-              dropdownStyles={{backgroundColor: 'white', marginBottom: 12}}
+              dropdownStyles={Styles.sortDropdownStyle}
               defaultOption={{key: 'stars', value: 'Stars'}}
+              search={false}
             />
           </View>
-          <View style={{width: '50%', paddingBottom: 10,paddingLeft: 10,paddingRight: 10}}>
-            <Text style={{color: 'white', padding: 5}}>Order BY</Text>
+          <View style={Styles.sortUiSubContainerView}>
+            <Text style={Styles.sortTitleText}>{CONSTANTS.orderByTitle}</Text>
             <SelectList
               setSelected={val => setOrder(val)}
               data={orderByData}
               save="key"
-              boxStyles={{backgroundColor: 'white', marginBottom: 12}}
-              dropdownStyles={{backgroundColor: 'white', marginBottom: 12}}
-              defaultOption={{key: 'asc', value: 'Ascending'}}
-            />
-            {/* <Text style={{color: 'white', padding: 5}}>Updated</Text>
-            <SelectList
-              setSelected={val => setDateValue(val)}
-              data={date}
-              save="key"
               boxStyles={{backgroundColor: 'white'}}
-              dropdownStyles={{backgroundColor: 'white', marginBottom: 12}}
-              defaultOption={{key: 'created_at', value: 'Created at'}}
-            /> */}
+              dropdownStyles={Styles.sortDropdownStyle}
+              defaultOption={{key: 'desc', value: 'Descending'}}
+              search={false}
+            />
           </View>
         </View>
       </>
@@ -122,83 +93,49 @@ export const SearchComponent = (props: any) => {
 
   return (
     <>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignSelf: 'center',
-          width: '100%',
-          borderWidth: 1,
-          borderRadius: 8,
-          borderColor: '#222222',
-          margin: 24,
-          backgroundColor: '#FFFFFF',
-          padding: 2,
-        }}>
+      <View style={Styles.mainContainer}>
         <TextInput
           maxLength={15}
-          autoFocus
           value={searchedText}
-          style={{color: '#222222', fontSize: 16, fontWeight: '500'}}
+          style={Styles.textInputContainer}
           placeholder="Search..."
           placeholderTextColor={'#B6B6B6'}
           onChangeText={(text: any) => setSearchedText(text)}
         />
       </View>
       {sortPressed && sortUI()}
-      <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+      <View style={Styles.buttonContainerView}>
         <TouchableOpacity
-          style={{
-            alignSelf: 'center',
-            backgroundColor: '#1B1091',
-            width: 120,
-            height: 40,
-            borderRadius: 8,
-            borderColor: '#222222',
-            borderWidth: 1,
-            marginBottom: 12,
-            opacity: searchedText.length > 0 ? 1 : 0.6,
-          }}
+          style={[
+            Styles.buttonCommonStyle,
+            {
+              backgroundColor: '#4B7AFB',
+              opacity: searchedText.length > 0 ? 1 : 0.6,
+            },
+          ]}
           disabled={searchedText?.length > 0 ? false : true}
           onPress={async () => {
-            setSortPressed(true);
+            await Keyboard.dismiss();
+            await setSortPressed(true);
           }}>
-          <Text
-            style={{
-              padding: 8,
-              textAlign: 'center',
-              color: '#FFFFFF',
-              fontWeight: 'bold',
-            }}>
-            Sort
-          </Text>
+          <Text style={Styles.buttonTextStyle}>{CONSTANTS.sortButtonText}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={{
-            alignSelf: 'center',
-            backgroundColor: '#6e40c9',
-            width: 120,
-            height: 40,
-            borderRadius: 8,
-            borderColor: '#222222',
-            borderWidth: 1,
-
-            marginBottom: 12,
-            opacity: searchedText.length > 0 ? 1 : 0.6,
-          }}
+          style={[
+            Styles.buttonCommonStyle,
+            {
+              backgroundColor: '#6e40c9',
+              opacity: searchedText.length > 0 ? 1 : 0.6,
+            },
+          ]}
           disabled={searchedText?.length > 0 ? false : true}
           onPress={async () => {
             await Keyboard.dismiss();
             await setPageNumber(1);
             await fetchRepos(searchedText, pageNumber, selected, order);
           }}>
-          <Text
-            style={{
-              padding: 8,
-              textAlign: 'center',
-              color: '#FFFFFF',
-              fontWeight: 'bold',
-            }}>
-            Search
+          <Text style={Styles.buttonTextStyle}>
+            {CONSTANTS.searchButtonText}
           </Text>
         </TouchableOpacity>
       </View>
@@ -220,58 +157,26 @@ export const SearchComponent = (props: any) => {
           ))
         )}
         {!isLoading && repoData.length > per_page_value - 1 && (
-          <View
-            style={{
-              alignSelf: 'flex-end',
-              borderRadius: 14,
-              borderColor: '#222222',
-              margin: 12,
-            }}>
-            <View style={{flexDirection: 'row'}}>
+          <View style={Styles.paginationMainContainerView}>
+            <View style={Styles.paginationSubContainerView}>
               <TouchableOpacity
                 onPress={async () => {
                   await setPageNumber(pageNumber - 1);
                   await fetchRepos(searchedText, pageNumber, selected, order);
                 }}>
-                <Text
-                  style={{
-                    padding: 4,
-                    fontSize: 18,
-                    margin: 5,
-                    textAlign: 'center',
-                    color: '#FFFFFF',
-                    fontWeight: 'bold',
-                  }}>
-                  {'<'}
+                <Text style={Styles.paginationTextStyle}>
+                  {CONSTANTS.backArrow}
                 </Text>
               </TouchableOpacity>
 
-              <Text
-                style={{
-                  padding: 4,
-                  fontSize: 18,
-                  margin: 5,
-                  textAlign: 'center',
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                }}>
-                {pageNumber}
-              </Text>
+              <Text style={Styles.paginationTextStyle}>{pageNumber}</Text>
               <TouchableOpacity
                 onPress={async () => {
                   await setPageNumber(pageNumber + 1);
                   await fetchRepos(searchedText, pageNumber, selected, order);
                 }}>
-                <Text
-                  style={{
-                    padding: 4,
-                    fontSize: 18,
-                    margin: 5,
-                    textAlign: 'center',
-                    color: '#FFFFFF',
-                    fontWeight: 'bold',
-                  }}>
-                  {'>'}
+                <Text style={Styles.paginationTextStyle}>
+                  {CONSTANTS.frontArrow}
                 </Text>
               </TouchableOpacity>
             </View>
